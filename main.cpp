@@ -45,7 +45,7 @@ int main()
 {
 	printf("Welcome to Mini-FS file system.\nFor help,use command: ""help"".\nOr type in your command directly.\n\n");
 	while (1) {
-		printf("Mini-FS-->");//???
+		printf("Mini-FS->");//???
 		cin >> cmd;
 		if (cmd == "create") {
 			printf("\n");
@@ -76,12 +76,9 @@ int main()
 			printf("\n");
 			char oldName[20];
 			char newName[20];
-			printf("Please input file name which is going to be changed.\n");
-			scanf("%s", oldName);
-			printf("Please input a new file name.\n");
-			scanf("%s", newName);
+			cin >> oldName >> newName;
 			changeName(oldName, newName);
-			printf("Rename file %s succeed\n\n",);
+			printf("Rename file %s succeed\n\n",oldName);
 		}
 		else if (cmd == "help") {
 			printf("\n");
@@ -91,15 +88,14 @@ int main()
 		else if (cmd == "att") {
 			printf("\n");
 			char fileName[20];
-			printf("Please input a file name to dispaly its attribute.\n");
-			scanf("%s", fileName);
+			cin >> fileName;
 			Att(fileName);
 			printf("\n");
 		}
 		else if (cmd == "fmt") {
 			printf("\n");
 			fmt();
-			printf("\n");
+			printf("Format Mini-FS succeed!\n\n");
 		}
 		else if (cmd == "newfile") {
 			printf("\n");
@@ -115,10 +111,9 @@ int main()
 		else if (cmd == "delete") {
 			printf("\n");
 			char fileName[20];
-			printf("Please input file name to delete a file.\n");
-			scanf("%s", fileName);
+			cin >> fileName;
 			deleteFile(fileName);
-			printf("\n");
+			printf("Delete file %s succeed!\n\n",fileName);
 		}
 		else if (cmd == "ls") {
 			printf("\n");
