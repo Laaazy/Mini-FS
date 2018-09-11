@@ -39,3 +39,6 @@ int addDirUnit(char fileName[], int inodeNum);
 
 //创建新文件
 int newFile(char fileName[], int fileSize);
+
+//显示Mini-FS中文件
+int listFile();
