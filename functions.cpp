@@ -37,7 +37,7 @@ int Att(char filename[]) {
 	for (int i = 0; i < disk->superblock.iNodeMount; i++) {
 		if (strcmp(disk->dirUnits[i].fileName, filename) == 0) {
 			printf("%s ", filename);
-			printf("%d\n", disk->inode_array[disk->dirUnits[i].inodeNumber].fileSize);
+			printf("%d Bytes\n", disk->inode_array[disk->dirUnits[i].inodeNumber].fileSize);
 			return 0;
 		}
 	}
@@ -260,5 +260,15 @@ int newFile(char fileName[], int fileSize) {
 	//修改目录
 	if (addDirUnit(fileName, inodeBlock) == -1)
 		return -1;
+	return 0;
+}
+
+int listFile() {
+	if (disk->superblock.iNodeMount == 0) {
+		return -1;
+	}
+	for (int i = 0; i < disk->superblock.iNodeMount; i++) {
+		printf("%s\n", disk->dirUnits[i].fileName);
+	}
 	return 0;
 }
