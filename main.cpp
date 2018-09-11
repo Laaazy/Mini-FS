@@ -51,26 +51,26 @@ int main()
 			printf("\n");
 			//cin >> SName;
 			creat();
-			printf("Create Mini-FS storage succeed!\n\n");
+			printf("Create Mini-FS storage succeed!\n\n");//???
 		}
 		else if (cmd == "mount"){
 			printf("\n");
 			mount();
 			printf("\n");
-			printf("Mount Mini-FS storage succeed!\n\n");
+			printf("Mount Mini-FS storage succeed!\n\n");//???
 		}
 		else if (cmd == "copyin"){
 			printf("\n");
 			//cout<<""//???
 			cin >> SName;
 			copyin(SName);
-			printf("Copy file %s in succeed!\n\n",SName);
+			printf("Copy file %s in succeed!\n\n",SName);//???
 		}
 		else if (cmd == "copyout"){
 			printf("\n");
 			cin >> filename >> SName;//???
 			copyout(filename, SName);
-			printf("\n");
+			printf("Copy file %s out succeed!\n\n",SName);
 		}
 		else if (cmd == "rename") {
 			printf("\n");
@@ -81,7 +81,7 @@ int main()
 			printf("Please input a new file name.\n");
 			scanf("%s", newName);
 			changeName(oldName, newName);
-			printf("\n");
+			printf("Rename file %s succeed\n\n",);
 		}
 		else if (cmd == "help") {
 			printf("\n");
