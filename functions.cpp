@@ -23,13 +23,13 @@ void help() {
 	printf("To load Mini-FS	in run-time memory:\t\t    mount\n");
 	printf("To format Mini-FS storage space:   \t\t    fmt\n");
 	printf("To list all files in Mini-FS:      \t\t    ls\n");
-	printf("To delete a file from Mini-FS:     \t\t    delete\n");
-	printf("To display a file`s attribution:   \t\t    att\n");
+	printf("To delete a file from Mini-FS:     \t\t    delete file_name\n");
+	printf("To display a file`s attribution:   \t\t    att file_name\n");
 	printf("To show command tips information:  \t\t    help\n");
-	printf("To rename an existing file in Mini-FS:              rename\n");
+	printf("To rename an existing file in Mini-FS:              rename file_name\n");
 	printf("To close Mini-FS and back to operating system:      close\n");
-	printf("To copy a file from operating system into Mini-FS:  copyin\n");
-	printf("To copy a file from Mini-FS into operating system:  copyout\n");
+	printf("To copy a file from operating system into Mini-FS:  copyin file_path\n");
+	printf("To copy a file from Mini-FS into operating system:  copyout file_name path_outside\n");
 }
 
 //显示空间文件属性
