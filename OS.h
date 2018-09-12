@@ -45,6 +45,7 @@ const int inode_count = data_block_mount;
 struct superBlock
 {
 	int iNodeMount; //inode数量
+	int iNodeNum;//实时iNode数量
 	int blockMount; //系统总共有多少块，对应fat表有多大
 	int iMapBlockMount; //inodeMap（标志inode_array使用情况）占多少块
 	int num1stDataBlock; //第一块数据块的块号是多少
