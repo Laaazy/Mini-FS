@@ -28,6 +28,7 @@
 struct dirUnit {
 	char fileName[59];
 	int inodeNumber;
+	//char time[50];
 };
 
 //目录表
