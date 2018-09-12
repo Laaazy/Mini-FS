@@ -17,6 +17,7 @@ int makeNewFile(const char* filename, int size)
 	{
 		if (disk->inode_Map[j] == 0)
 		{
+			disk->inode_Map[j] = 1;
 			disk->dirUnits[i].inodeNumber = j;
 			break;
 		}
@@ -35,6 +36,7 @@ int makeNewFile(const char* filename, int size)
 						disk->inode_array[j].startBlockNum = p;
 					sum++;
 					if (sum == size) {
+						//disk->dirUnits[i].inodeNumber = j;
 						return i;
 					}
 				}
