@@ -47,17 +47,19 @@ int main()
 	while (1) {
 		printf("Mini-FS->");//???
 		cin >> cmd;
+
 		if (cmd == "create") {
 			printf("\n");
 			//cin >> SName;
 			creat();
-			printf("Create Mini-FS storage succeed!\n\n");//???
+			printf("Create Mini-FS succeed!\n\n");//???
 		}
 		else if (cmd == "mount"){
 			printf("\n");
+			//cin >> SpaceName;
 			mount();
 			printf("\n");
-			printf("Mount Mini-FS storage succeed!\n\n");//???
+			printf("Mount Mini-FS succeed!\n\n");//???
 		}
 		else if (cmd == "copyin"){
 			printf("\n");
@@ -94,35 +96,50 @@ int main()
 		}
 		else if (cmd == "fmt") {
 			printf("\n");
+			//cin >> SpaceName;
 			fmt();
 			printf("Format Mini-FS succeed!\n\n");
 		}
-		else if (cmd == "newfile") {
-			printf("\n");
-			char fileName[20];
-			int fileSize;//输入的是文件字节数
-			printf("Please input new file`s name.\n");
-			scanf("%s", fileName);
-			printf("Please input file size.\n");
-			scanf("%d", fileSize);
-			newFile(fileName, fileSize / block_size);
-			printf("\n");
-		}
+		//else if (cmd == "newfile") {
+		//	printf("\n");
+		//	char fileName[20];
+		//	int fileSize;//输入的是文件字节数
+		//	printf("Please input new file`s name.\n");
+		//	scanf("%s", fileName);
+		//	printf("Please input file size.\n");
+		//	scanf("%d", fileSize);
+		//	newFile(fileName, fileSize / block_size);
+		//	printf("\n");
+		//}
 		else if (cmd == "delete") {
 			printf("\n");
 			char fileName[20];
 			cin >> fileName;
-			deleteFile(fileName);
-			printf("Delete file %s succeed!\n\n",fileName);
+			if (deleteFile(fileName) == 0)
+				printf("Delete file %s succeed!\n\n", fileName);
+			else
+				printf("No such file!\n\n");
 		}
 		else if (cmd == "ls") {
 			printf("\n");
 			if (listFile() == 0) {
-				printf("Finished\n\n");
+				printf("Finished.\n\n");
 			}
 			else{
 				printf("No file in Mini-FS\n\n");
 			}
+		}
+		else if (cmd == "map") {
+			printf("\n");
+			char fileName[20];
+			cin >> fileName;
+			if (map(fileName) == 0) {
+				printf("Finished.\n\n");
+			}
+			else if (map(fileName) == 1)
+				printf("File is empty!\n\n");
+			else
+				printf("No such file!\n\n");
 		}
 		else {
 			cout << cmd;
