@@ -23,26 +23,36 @@ int makeNewFile(const char* filename, int size)
 		}
 	}
 	int sum = 0;
-	for (int p = reserved_block_mount; p < block_mount; p++)
-	{
+	for (int p = reserved_block_mount; p<block_mount;) {
 		if (disk->FAT[p] == 0)
 		{
-			for (int q = p + 1; q < block_mount; q++)
+			sum++;
+			if (size == 0) {
+				disk->inode_array[j].startBlockNum = -1;
+				return i;
+			}
+			if (sum == 1)
 			{
-				if (disk->FAT[q] == 0)
-				{
+				disk->inode_array[j].startBlockNum = p;
+			}
+			if (sum == size) {
+				disk->FAT[p] = -1;
+				return i;
+			}
+			for (int q = p + 1; q < block_mount; q++) {
+				if (disk->FAT[q] == 0) {
 					disk->FAT[p] = q;
-					if (sum == 0)
-						disk->inode_array[j].startBlockNum = p;
-					sum++;
-					if (sum == size) {
-						//disk->dirUnits[i].inodeNumber = j;
-						return i;
-					}
+					p = q;
+					break;
 				}
-				p = q;
+				else
+				{
+					continue;
+				}
 			}
 		}
+		else
+			p++;
 	}
 	return -1;
 }
