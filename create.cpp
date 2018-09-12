@@ -39,7 +39,7 @@ void creat()
 		for (int i = 0; i < inode_count; i++)
 		{
 			disk->dirUnits[i].inodeNumber = -1;
-			disk->dirUnits[i].fileName[0] = 0;
+			disk->dirUnits[i].fileName[0] = '\0';
 		}
 		for (int i = 0; i < reserved_block_mount; i++)
 			disk->FAT[i] = 1;
@@ -56,6 +56,7 @@ void creat()
 		disk->superblock.fatBlockMount = sizeof(disk->FAT) / block_size;
 		disk->superblock.iNodeBlockMount = sizeof(sizeof(disk->inode_array)) / block_size;
 		disk->superblock.iNodeMount = data_block_mount;
+		disk->superblock.iNodeNum = 0;
 		disk->superblock.num1stDataBlock = reserved_block_mount + 1;
 
 		//kaitou
@@ -130,6 +131,7 @@ void copyin(const char*filename)//复制文件
 		filenumber = disk->FAT[filenumber];
 	}
 	fclose(p);
+	disk->superblock.iNodeNum++;//???
 }
 
 void copyout(const char*filename, char SName[])
