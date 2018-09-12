@@ -18,11 +18,11 @@ void copyout(const char*filename, char SName[]);//拉出文件
 
 void help();
 
-void creat();
+void creat(char fileName[]);
 
-void mount();
+void mount(char fileName[]);
 
-int format();
+int format(char fileName[]);
 
 int close();
 
@@ -32,8 +32,19 @@ int rm(char *filename);
 
 void exitsys();
 
+void save_inode_array(FILE *fp);
+
+void save_dirUnits(FILE *fp);
+
+
 void ls();
 //全局变量
+
+void save_superblock(FILE *fp);
+
+void save_fat(FILE *fp);
+
+void save_inode_map(FILE *fp);
 
 FILE *p; //外存起始位置
 string cmd;
@@ -48,22 +59,25 @@ int main()
 		printf("Mini-FS->");//???
 		cin >> cmd;
 
-		if (cmd == "create") {
+		if (cmd=="cls") {
+			system("cls");
+		}
+		else if (cmd == "create") {
 			printf("\n");
-			//cin >> SName;
-			creat();
+			char Mini[20];
+			cin >> Mini;
+			creat(Mini);
 			printf("Create Mini-FS succeed!\n\n");//???
 		}
 		else if (cmd == "mount"){
 			printf("\n");
-			//cin >> SpaceName;
-			mount();
-			printf("\n");
+			char Mini[20];
+			cin >> Mini;
+			mount(Mini);
 			printf("Mount Mini-FS succeed!\n\n");//???
 		}
 		else if (cmd == "copyin"){
 			printf("\n");
-			//cout<<""//???
 			cin >> SName;
 			copyin(SName);
 			printf("Copy file %s in succeed!\n\n",SName);//???
@@ -98,8 +112,9 @@ int main()
 		}
 		else if (cmd == "fmt") {
 			printf("\n");
-			//cin >> SpaceName;
-			fmt();
+			char fileName[20];
+			cin >> fileName;
+			if(format(fileName)==0)
 			printf("Format Mini-FS succeed!\n\n");
 		}
 		//else if (cmd == "newfile") {
