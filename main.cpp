@@ -143,6 +143,9 @@ int main()
 			else
 				printf("No such file!\n\n");
 		}
+		else if (cmd == "close") {
+			return 0;
+		}
 		else {
 			cout << cmd;
 			printf(":\nillegal command!\n\n");
