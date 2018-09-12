@@ -8,11 +8,10 @@ int changeName(char oldName[], char newName[])
 		if (strcmp(oldName, disk->dirUnits[i].fileName) == 0)
 		{
 			strcpy(disk->dirUnits[i].fileName, newName);
-			return 0;
+			return 0;//0表示更名成功
 		}
 	}
-	cout << "File not found\n";
-	return -1;
+	return -1;//-1表示文件不存在
 }
 
 
@@ -21,14 +20,14 @@ void help() {
 	printf("Below are some help information:\n\n");
 	printf("To create a Mini-FS storeage space:\t\t    create     space_name\n");
 	printf("To load Mini-FS	in run-time memory:\t\t    mount      space_name\n");
+	printf("To exit Mini-FS and return to operating system:     close\n");
 	printf("To format Mini-FS storage space:   \t\t    fmt        space_name\n");
 	printf("To list all files in Mini-FS:      \t\t    ls\n");
 	printf("To show which blocks are file storaged in           map        file_name\n");
 	printf("To delete a file from Mini-FS:     \t\t    delete     file_name\n");
 	printf("To display a file`s attribution:   \t\t    att        file_name\n");
 	printf("To show command tips information:  \t\t    help\n");
-	printf("To rename an existing file in Mini-FS:              rename     file_name\n");
-	printf("To close Mini-FS and back to operating system:      close\n");
+	printf("To rename an existing file in Mini-FS:              rename     file_name new_name\n");
 	printf("To copy a file from operating system into Mini-FS:  copyin     file_path\n");
 	printf("To copy a file from Mini-FS into operating system:  copyout    file_name path_outside\n");
 }
@@ -38,12 +37,11 @@ int Att(char filename[]) {
 	for (int i = 0; i < disk->superblock.iNodeNum; i++) {
 		if (strcmp(disk->dirUnits[i].fileName, filename) == 0) {
 			printf("%s ", filename);
-			printf("%d Bytes\n", disk->inode_array[disk->dirUnits[i].inodeNumber].fileSize);
-			return 0;
+			printf("%d Bytes\n\n", disk->inode_array[disk->dirUnits[i].inodeNumber].fileSize);
+			return 0;//0表示成功
 		}
 	}
-	printf("No such file.\n");
-	return -1;
+	return -1;//-1表示文件不存在
 }
 
 
