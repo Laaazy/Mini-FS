@@ -1,9 +1,9 @@
 #include"functions.h"
-
+#include<math.h>
 //文件重命名
 int changeName(char oldName[], char newName[])
 {
-	for (int i = 0; i < disk->superblock.iNodeMount; i++)
+	for (int i = 0; i < disk->superblock.iNodeNum; i++)
 	{
 		if (strcmp(oldName, disk->dirUnits[i].fileName) == 0)
 		{
@@ -19,22 +19,23 @@ int changeName(char oldName[], char newName[])
 //显示帮助信息
 void help() {
 	printf("Below are some help information:\n\n");
-	printf("To create a Mini-FS storeage space:\t\t    create\n");
-	printf("To load Mini-FS	in run-time memory:\t\t    mount\n");
-	printf("To format Mini-FS storage space:   \t\t    fmt\n");
+	printf("To create a Mini-FS storeage space:\t\t    create     space_name\n");
+	printf("To load Mini-FS	in run-time memory:\t\t    mount      space_name\n");
+	printf("To format Mini-FS storage space:   \t\t    fmt        space_name\n");
 	printf("To list all files in Mini-FS:      \t\t    ls\n");
-	printf("To delete a file from Mini-FS:     \t\t    delete file_name\n");
-	printf("To display a file`s attribution:   \t\t    att file_name\n");
+	printf("To show which blocks are file storaged in           map        file_name\n");
+	printf("To delete a file from Mini-FS:     \t\t    delete     file_name\n");
+	printf("To display a file`s attribution:   \t\t    att        file_name\n");
 	printf("To show command tips information:  \t\t    help\n");
-	printf("To rename an existing file in Mini-FS:              rename file_name\n");
+	printf("To rename an existing file in Mini-FS:              rename     file_name\n");
 	printf("To close Mini-FS and back to operating system:      close\n");
-	printf("To copy a file from operating system into Mini-FS:  copyin file_path\n");
-	printf("To copy a file from Mini-FS into operating system:  copyout file_name path_outside\n");
+	printf("To copy a file from operating system into Mini-FS:  copyin     file_path\n");
+	printf("To copy a file from Mini-FS into operating system:  copyout    file_name path_outside\n");
 }
 
 //显示空间文件属性
 int Att(char filename[]) {
-	for (int i = 0; i < disk->superblock.iNodeMount; i++) {
+	for (int i = 0; i < disk->superblock.iNodeNum; i++) {
 		if (strcmp(disk->dirUnits[i].fileName, filename) == 0) {
 			printf("%s ", filename);
 			printf("%d Bytes\n", disk->inode_array[disk->dirUnits[i].inodeNumber].fileSize);
@@ -120,7 +121,7 @@ int releaseFile(int inodeNum) {
 	iNode* Myinode = &disk->inode_array[inodeNum];
 	int fileBlock[data_block_mount];
 	memset(fileBlock, 0, sizeof(fileBlock));
-	for (int i = 0, j = Myinode->startBlockNum; i < Myinode->fileSize; i++, j = disk->FAT[j]) {
+	for (int i = 0, j = Myinode->startBlockNum; i < ceil(Myinode->fileSize/block_size); i++, j = disk->FAT[j]) {
 		fileBlock[i] = disk->FAT[j];
 	}
 	int i = 0;
@@ -135,18 +136,18 @@ int releaseFile(int inodeNum) {
 
 //删除目录表中文件对应目录项
 int deleteDirUnit(int unitIndex) {
-	int dirAmount = disk->superblock.iNodeMount;
+	int dirAmount = disk->superblock.iNodeNum;
 	for (int i = unitIndex; i < dirAmount; i++) {
 		disk->dirUnits[i] = disk->dirUnits[i + 1];
 	}
-	disk->superblock.iNodeMount--;
+	disk->superblock.iNodeNum--;
 	return 0;
 }
 
 //删除文件
 int deleteFile(char fileName[]) {
 
-	int fileNum = disk->superblock.iNodeMount;
+	int fileNum = disk->superblock.iNodeNum;
 	int i;
 	int flag = 0;
 	for (i = 0; i<fileNum; i++) {
@@ -157,7 +158,6 @@ int deleteFile(char fileName[]) {
 		}
 	}
 	if (flag == 0) {
-		printf("File not found!\n");
 		return -1;
 	}
 	dirUnit myUnit = disk->dirUnits[i];
@@ -197,7 +197,7 @@ int createInode(int iNodeNum, int fileBlockNum, int fileSize) {
 
 //为文件创建目录项
 int addDirUnit(char fileName[], int inodeNum) {
-	int fileNum = disk->superblock.iNodeMount;
+	int fileNum = disk->superblock.iNodeNum;
 	if (fileNum == inode_count) {
 		printf("Dir is full,please delete some files!\n");
 		return -1;
@@ -209,7 +209,7 @@ int addDirUnit(char fileName[], int inodeNum) {
 		}
 	}
 	dirUnit* newDirUnit = &disk->dirUnits[fileNum];
-	disk->superblock.iNodeMount++;
+	disk->superblock.iNodeNum++;
 	strcpy(disk->dirUnits[fileNum].fileName, fileName);
 	disk->dirUnits[fileNum].inodeNumber = inodeNum;
 	return 0;
@@ -264,11 +264,30 @@ int newFile(char fileName[], int fileSize) {
 }
 
 int listFile() {
-	if (disk->superblock.iNodeMount == 0) {
+	if (disk->superblock.iNodeNum == 0) {
 		return -1;
 	}
-	for (int i = 0; i < disk->superblock.iNodeMount; i++) {
+	for (int i = 0; i < disk->superblock.iNodeNum; i++) {
 		printf("%s\n", disk->dirUnits[i].fileName);
 	}
 	return 0;
+}
+
+
+//打印存储文件的block
+int map(char fileName[]) {
+	for (int i = 0; i < disk->superblock.iNodeNum; i++) {
+		if (strcmp(fileName, disk->dirUnits[i].fileName) == 0) {
+			if (disk->inode_array[disk->dirUnits[i].inodeNumber].fileSize == 0)
+				return 1;//1表示文件为空
+			printf("%s are storaged in blocks below:\n",fileName);
+			for (int j = disk->inode_array[disk->dirUnits[i].inodeNumber].startBlockNum; 
+				j!= -1; j = disk->FAT[j]) {
+				printf("%d  ",j);
+			}
+			printf("\n");
+			return 0;//0表示文件存在且不为空
+		}
+	}
+	return -1;//-1表示文件不存在
 }
