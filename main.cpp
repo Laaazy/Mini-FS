@@ -79,8 +79,10 @@ int main()
 			char oldName[20];
 			char newName[20];
 			cin >> oldName >> newName;
-			changeName(oldName, newName);
-			printf("Rename file %s succeed\n\n",oldName);
+			if (changeName(oldName, newName)==0)
+				printf("Rename file %s succeed\n\n", oldName);
+			else
+				printf("No such file!\n\n");
 		}
 		else if (cmd == "help") {
 			printf("\n");
@@ -91,8 +93,8 @@ int main()
 			printf("\n");
 			char fileName[20];
 			cin >> fileName;
-			Att(fileName);
-			printf("\n");
+			if(Att(fileName)==-1)
+				printf("No such file\n\n");
 		}
 		else if (cmd == "fmt") {
 			printf("\n");
@@ -143,7 +145,7 @@ int main()
 		}
 		else {
 			cout << cmd;
-			printf(":\nIllegal command!\n\n");
+			printf(":\nillegal command!\n\n");
 		}
 	}
 }
