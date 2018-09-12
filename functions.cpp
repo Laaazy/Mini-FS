@@ -18,18 +18,19 @@ int changeName(char oldName[], char newName[])
 //显示帮助信息
 void help() {
 	printf("Below are some help information:\n\n");
+	printf("To clear screen:                   \t\t    cls\n");
+	printf("To show command tips information:  \t\t    help\n");
+	printf("To list all files in Mini-FS:      \t\t    ls\n");
+	printf("To exit Mini-FS and return to operating system:     close\n");
 	printf("To create a Mini-FS storeage space:\t\t    create     space_name\n");
 	printf("To load Mini-FS	in run-time memory:\t\t    mount      space_name\n");
-	printf("To exit Mini-FS and return to operating system:     close\n");
 	printf("To format Mini-FS storage space:   \t\t    fmt        space_name\n");
-	printf("To list all files in Mini-FS:      \t\t    ls\n");
 	printf("To show which blocks are file storaged in           map        file_name\n");
 	printf("To delete a file from Mini-FS:     \t\t    delete     file_name\n");
 	printf("To display a file`s attribution:   \t\t    att        file_name\n");
-	printf("To show command tips information:  \t\t    help\n");
-	printf("To rename an existing file in Mini-FS:              rename     file_name new_name\n");
 	printf("To copy a file from operating system into Mini-FS:  copyin     file_path\n");
 	printf("To copy a file from Mini-FS into operating system:  copyout    file_name path_outside\n");
+	printf("To rename an existing file in Mini-FS:              rename     file_name new_name\n");
 }
 
 //显示空间文件属性
@@ -45,74 +46,6 @@ int Att(char filename[]) {
 }
 
 
-//格式化系统
-void fmt() {
-	//extern int addr_superblock_start ;
-	//extern int addr_fat_start = 0;
-	//extern int addr_inodemap_start = 0;
-	//extern int addr_inodearray_start = 0;
-	//extern int addr_dirUnits_start = 0;
-	//extern int addr;
-	//p = fopen("D:/mini-FS/mini.fs", "wb");
-	//for (int i = 0; i < inode_count; i++)
-	//{
-	//	disk->dirUnits[i].inodeNumber = -1;
-	//	disk->dirUnits[i].fileName[0] = 0;
-	//}
-	//for (int i = 0; i < reserved_block_mount; i++)
-	//	disk->FAT[i] = 1;
-	//for (int i = reserved_block_mount; i < block_mount; i++)
-	//	disk->FAT[i] = 0;
-	//for (int i = 0; i < inode_count; i++)
-	//	disk->inode_Map[i] = 0;
-	//for (int i = 0; i < inode_count; i++)
-	//{
-	//	disk->inode_array[i].fileSize = 0;
-	//	disk->inode_array[i].startBlockNum = 0;
-	//}
-	//disk->superblock.blockMount = block_mount;
-	//disk->superblock.fatBlockMount = sizeof(disk->FAT) / block_size;
-	//disk->superblock.iNodeBlockMount = sizeof(sizeof(disk->inode_array)) / block_size;
-	//disk->superblock.iNodeMount = data_block_mount;
-	//disk->superblock.num1stDataBlock = reserved_block_mount + 1;
-
-	////kaitou
-	////superblock
-	//addr_superblock_start = 0;
-	//fseek(p, addr_superblock_start, SEEK_SET);
-	//fwrite(&(disk->superblock), sizeof(disk->superblock), 1, p);
-
-
-	////FAT
-	//addr_fat_start = block_size * 10;
-	//fseek(p, addr_fat_start, SEEK_SET);
-	//fwrite((disk->FAT), sizeof((disk->FAT)), 1, p);
-
-	////inode_map
-	//addr_inodemap_start = block_size * 300;
-	//fseek(p, addr_inodemap_start, SEEK_SET);
-	//fwrite(disk->inode_Map, sizeof((disk->inode_Map)), 1, p);
-
-	////inode_array
-	//addr_inodearray_start = block_size * 2000;
-	//fseek(p, addr_inodearray_start, SEEK_SET);
-	//fwrite((disk->inode_array), sizeof((disk->inode_array)), 1, p);
-
-	////dirUnits
-	//addr_dirUnits_start = block_size * 8000;
-	//fseek(p, addr_dirUnits_start, SEEK_SET);
-	//fwrite(disk->dirUnits, sizeof(disk->dirUnits), 1, p);
-	//addr = reserved_block_mount * 4096;
-
-	////jiewei
-
-	//fseek(p, system_size - 1, SEEK_SET);
-	//char end = EOF;
-	//fwrite(&end, 1, 1, p);
-	//fclose(p);
-	/*create();*/
-	
-}
 
 //删除文件内容
 int releaseFile(int inodeNum) {
@@ -274,6 +207,7 @@ int listFile() {
 
 //打印存储文件的block
 int map(char fileName[]) {
+	int eachLine = 0;
 	for (int i = 0; i < disk->superblock.iNodeNum; i++) {
 		if (strcmp(fileName, disk->dirUnits[i].fileName) == 0) {
 			if (disk->inode_array[disk->dirUnits[i].inodeNumber].fileSize == 0)
@@ -282,6 +216,11 @@ int map(char fileName[]) {
 			for (int j = disk->inode_array[disk->dirUnits[i].inodeNumber].startBlockNum; 
 				j!= -1; j = disk->FAT[j]) {
 				printf("%d  ",j);
+				eachLine++;
+				if (eachLine % 5 == 0){
+					printf("\n");
+					eachLine = 0;
+				}
 			}
 			printf("\n");
 			return 0;//0表示文件存在且不为空
