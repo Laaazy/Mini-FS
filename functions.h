@@ -42,3 +42,6 @@ int newFile(char fileName[], int fileSize);
 
 //显示Mini-FS中文件
 int listFile();
+
+//打印存储文件的block
+int map(char fileName[]);
