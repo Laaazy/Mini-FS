@@ -25,9 +25,6 @@ int releaseFile(int inodeNum);
 //删除目录表中文件对应目录项
 int deleteDirUnit(int unitIndex);
 
-//删除文件
-int deleteFile(char fileName[]);
-
 //检查是否有足够数量的block
 int getBlock(int blockNumber);
 
