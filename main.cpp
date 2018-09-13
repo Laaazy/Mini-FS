@@ -14,7 +14,11 @@ using namespace std;
 
 //帮助信息
 
-void copyout(const char*filename, char SName[]);//拉出文件
+int deleteFile(char spaceName[], char fileName[]);
+
+int changeName(char SpaceName[], char oldName[], char newName[]);
+
+void copyout(char spaceName[],const char*filename, char SName[]);//拉出文件
 
 void help();
 
@@ -26,7 +30,7 @@ int format(char fileName[]);
 
 int close();
 
-void copyin(const char*filename);//拉入文件
+void copyin(char spaceName[],const char*filename);//拉入文件
 
 int rm(char *filename);
 
@@ -54,6 +58,7 @@ char filename[50];
 
 int main()
 {
+	char Mini[20];
 	printf("Welcome to Mini-FS file system.\nFor help,use command: ""help"".\nOr type in your command directly.\n\n");
 	while (1) {
 		printf("Mini-FS->");//???
@@ -64,14 +69,12 @@ int main()
 		}
 		else if (cmd == "create") {
 			printf("\n");
-			char Mini[20];
 			cin >> Mini;
 			creat(Mini);
 			printf("Create Mini-FS succeed!\n\n");//???
 		}
 		else if (cmd == "mount"){
 			printf("\n");
-			char Mini[20];
 			cin >> Mini;
 			mount(Mini);
 			printf("Mount Mini-FS succeed!\n\n");//???
@@ -79,13 +82,13 @@ int main()
 		else if (cmd == "copyin"){
 			printf("\n");
 			cin >> SName;
-			copyin(SName);
+			copyin(Mini,SName);
 			printf("Copy file %s in succeed!\n\n",SName);//???
 		}
 		else if (cmd == "copyout"){
 			printf("\n");
 			cin >> filename >> SName;//???
-			copyout(filename, SName);
+			copyout(Mini,filename, SName);
 			printf("Copy file %s out succeed!\n\n",SName);
 		}
 		else if (cmd == "rename") {
@@ -93,7 +96,7 @@ int main()
 			char oldName[20];
 			char newName[20];
 			cin >> oldName >> newName;
-			if (changeName(oldName, newName)==0)
+			if (changeName(Mini,oldName, newName)==0)
 				printf("Rename file %s succeed\n\n", oldName);
 			else
 				printf("No such file!\n\n");
@@ -132,7 +135,7 @@ int main()
 			printf("\n");
 			char fileName[20];
 			cin >> fileName;
-			if (deleteFile(fileName) == 0)
+			if (deleteFile(Mini,fileName) == 0)
 				printf("Delete file %s succeed!\n\n", fileName);
 			else
 				printf("No such file!\n\n");
