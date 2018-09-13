@@ -1,18 +1,33 @@
 #include"functions.h"
 #include<math.h>
-//文件重命名
-int changeName(char oldName[], char newName[])
-{
-	for (int i = 0; i < disk->superblock.iNodeNum; i++)
-	{
-		if (strcmp(oldName, disk->dirUnits[i].fileName) == 0)
-		{
-			strcpy(disk->dirUnits[i].fileName, newName);
-			return 0;//0表示更名成功
-		}
-	}
-	return -1;//-1表示文件不存在
-}
+////文件重命名
+//int changeName(char oldName[], char newName[])
+//{
+//	int i;
+//	for (i = 0; i < strlen(newName); i++) {
+//		if (newName[i] == '.')
+//			break;
+//	}
+//	//规定文件名不超过8位
+//	if (i > 8) {
+//		printf("file name too long!\n");
+//		return -1;
+//	}
+//	//扩展名不能超过3位
+//	if (strlen(newName) - i - 1>3) {
+//		printf("extend name too long!\n");
+//		return -1;
+//	}
+//	for (int i = 0; i < disk->superblock.iNodeNum; i++)
+//	{
+//		if (strcmp(oldName, disk->dirUnits[i].fileName) == 0)
+//		{
+//			strcpy(disk->dirUnits[i].fileName, newName);
+//			return 0;//0表示更名成功
+//		}
+//	}
+//	return -1;//-1表示文件不存在
+//}
 
 
 //显示帮助信息
@@ -35,8 +50,8 @@ void help() {
 
 //显示空间文件属性
 int Att(char filename[]) {
-	for (int i = 0; i < disk->superblock.iNodeNum; i++) {
-		if (strcmp(disk->dirUnits[i].fileName, filename) == 0) {
+	for (int i = 0; i <data_block_mount; i++) {
+		if (strcmp(disk->dirUnits[i].fileName, filename) == 0&&disk->dirUnits[i].inodeNumber!=-1) {
 			printf("%s ", filename);
 			printf("%d Bytes\n\n", disk->inode_array[disk->dirUnits[i].inodeNumber].fileSize);
 			return 0;//0表示成功
@@ -47,55 +62,55 @@ int Att(char filename[]) {
 
 
 
-//删除文件内容
-int releaseFile(int inodeNum) {
-	iNode* Myinode = &disk->inode_array[inodeNum];
-	int fileBlock[data_block_mount];
-	memset(fileBlock, 0, sizeof(fileBlock));
-	for (int i = 0, j = Myinode->startBlockNum; i < ceil(Myinode->fileSize/block_size); i++, j = disk->FAT[j]) {
-		fileBlock[i] = disk->FAT[j];
-	}
-	int i = 0;
-	while (fileBlock[i] != 0) {
-		disk->FAT[fileBlock[i]] = 0;
-		i++;
-	}
-	Myinode->fileSize = 0;
-	return 0;
-}
+////删除文件内容
+//int releaseFile(int inodeNum) {
+//	iNode* Myinode = &disk->inode_array[inodeNum];
+//	int fileBlock[data_block_mount];
+//	memset(fileBlock, 0, sizeof(fileBlock));
+//	for (int i = 0, j = Myinode->startBlockNum; i < ceil(Myinode->fileSize/block_size); i++, j = disk->FAT[j]) {
+//		fileBlock[i] = disk->FAT[j];
+//	}
+//	int i = 0;
+//	while (fileBlock[i] != 0) {
+//		disk->FAT[fileBlock[i]] = 0;
+//		i++;
+//	}
+//	Myinode->fileSize = 0;
+//	return 0;
+//}
+//
 
+////删除目录表中文件对应目录项
+//int deleteDirUnit(int unitIndex) {
+//	int dirAmount = disk->superblock.iNodeNum;
+//	for (int i = unitIndex; i < dirAmount; i++) {
+//		disk->dirUnits[i] = disk->dirUnits[i + 1];
+//	}
+//	disk->superblock.iNodeNum--;
+//	return 0;
+//}
 
-//删除目录表中文件对应目录项
-int deleteDirUnit(int unitIndex) {
-	int dirAmount = disk->superblock.iNodeNum;
-	for (int i = unitIndex; i < dirAmount; i++) {
-		disk->dirUnits[i] = disk->dirUnits[i + 1];
-	}
-	disk->superblock.iNodeNum--;
-	return 0;
-}
-
-//删除文件
-int deleteFile(char fileName[]) {
-
-	int fileNum = disk->superblock.iNodeNum;
-	int i;
-	int flag = 0;
-	for (i = 0; i<fileNum; i++) {
-		if (strcmp(disk->dirUnits[i].fileName, fileName) == 0) {
-			//找到文件
-			flag = 1;
-			break;
-		}
-	}
-	if (flag == 0) {
-		return -1;
-	}
-	dirUnit myUnit = disk->dirUnits[i];
-	int inodeNum = myUnit.inodeNumber;
-	releaseFile(inodeNum);
-	deleteDirUnit(i);
-}
+////删除文件
+//int deleteFile(char fileName[]) {
+//
+//	int fileNum = disk->superblock.iNodeNum;
+//	int i;
+//	int flag = 0;
+//	for (i = 0; i<fileNum; i++) {
+//		if (strcmp(disk->dirUnits[i].fileName, fileName) == 0) {
+//			//找到文件
+//			flag = 1;
+//			break;
+//		}
+//	}
+//	if (flag == 0) {
+//		return -1;
+//	}
+//	dirUnit myUnit = disk->dirUnits[i];
+//	int inodeNum = myUnit.inodeNumber;
+//	releaseFile(inodeNum);
+//	deleteDirUnit(i);
+//}
 
 //检查是否有足够数量的block
 int getBlock(int blockNumber) {
@@ -126,81 +141,85 @@ int createInode(int iNodeNum, int fileBlockNum, int fileSize) {
 	return 0;
 }
 
-//为文件创建目录项
-int addDirUnit(char fileName[], int inodeNum) {
-	int fileNum = disk->superblock.iNodeNum;
-	if (fileNum == inode_count) {
-		printf("Dir is full,please delete some files!\n");
-		return -1;
-	}
-	for (int i = 0; i<fileNum; i++) {
-		if (strcmp(disk->dirUnits[i].fileName, fileName) == 0) {
-			printf("File already exists!\n");
-			return -1;
-		}
-	}
-	dirUnit* newDirUnit = &disk->dirUnits[fileNum];
-	disk->superblock.iNodeNum++;
-	strcpy(disk->dirUnits[fileNum].fileName, fileName);
-	disk->dirUnits[fileNum].inodeNumber = inodeNum;
-	return 0;
-}
-
-
-//创建新文件,fileSize是文件需占用盘块数
-int newFile(char fileName[], int fileSize) {
-	int i;
-	for (i = 0; i < strlen(fileName); i++) {
-		if (fileName[i] == '.')
-			break;
-	}
-	//规定文件名不超过8位
-	if (i > 8) {
-		printf("file name too long!\n");
-		return -1;
-	}
-	//扩展名不能超过3位
-	if (strlen(fileName) - i - 1>3) {
-		printf("extend name too long!\n");
-		return -1;
-	}
-
-	int inodeBlock = -1;
-	for (int i = 0; i < inode_count; i++) {
-		if (disk->inode_Map[i] == 0)
-			//找到空闲inode
-			inodeBlock = i;
-	}
-	if (inodeBlock == -1) {
-		printf("No more block could be used!\n");
-		return -1;
-	}
-	//申请数据块
-	int fileBlock = getBlock(fileSize);
-	if (fileBlock == -1) {
-		printf("No enough block could be used!\n");
-		return -1;
-	}
-	//修改目录项
-	createInode(inodeBlock, fileBlock, fileSize);
-	for (int i = fileBlock, j = block_mount / 16, k = 0; j<block_mount&&k<fileSize; i = j, j++, k++) {
-		if (disk->FAT[j] == 0) {
-			disk->FAT[i] = j;
-		}
-	}
-	//修改目录
-	if (addDirUnit(fileName, inodeBlock) == -1)
-		return -1;
-	return 0;
-}
+////为文件创建目录项
+//int addDirUnit(char fileName[], int inodeNum) {
+//	int fileNum = disk->superblock.iNodeNum;
+//	if (fileNum == inode_count) {
+//		printf("Dir is full,please delete some files!\n");
+//		return -1;
+//	}
+//	for (int i = 0; i<fileNum; i++) {
+//		if (strcmp(disk->dirUnits[i].fileName, fileName) == 0) {
+//			printf("File already exists!\n");
+//			return -1;
+//		}
+//	}
+//	dirUnit* newDirUnit = &disk->dirUnits[fileNum];
+//	disk->superblock.iNodeNum++;
+//	strcpy(disk->dirUnits[fileNum].fileName, fileName);
+//	disk->dirUnits[fileNum].inodeNumber = inodeNum;
+//	return 0;
+//}
+//
+//
+////创建新文件,fileSize是文件需占用盘块数
+//int newFile(char fileName[], int fileSize) {
+//	int i;
+//	for (i = 0; i < strlen(fileName); i++) {
+//		if (fileName[i] == '.')
+//			break;
+//	}
+//	//规定文件名不超过8位
+//	if (i > 8) {
+//		printf("file name too long!\n");
+//		return -1;
+//	}
+//	//扩展名不能超过3位
+//	if (strlen(fileName) - i - 1>3) {
+//		printf("extend name too long!\n");
+//		return -1;
+//	}
+//
+//	int inodeBlock = -1;
+//	for (int i = 0; i < inode_count; i++) {
+//		if (disk->inode_Map[i] == 0)
+//			//找到空闲inode
+//			inodeBlock = i;
+//	}
+//	if (inodeBlock == -1) {
+//		printf("No more block could be used!\n");
+//		return -1;
+//	}
+//	//申请数据块
+//	int fileBlock = getBlock(fileSize);
+//	if (fileBlock == -1) {
+//		printf("No enough block could be used!\n");
+//		return -1;
+//	}
+//	//修改目录项
+//	createInode(inodeBlock, fileBlock, fileSize);
+//	for (int i = fileBlock, j = block_mount / 16, k = 0; j<block_mount&&k<fileSize; i = j, j++, k++) {
+//		if (disk->FAT[j] == 0) {
+//			disk->FAT[i] = j;
+//		}
+//	}
+//	//修改目录
+//	if (addDirUnit(fileName, inodeBlock) == -1)
+//		return -1;
+//	return 0;
+//}
 
 int listFile() {
-	if (disk->superblock.iNodeNum == 0) {
+	int flag = 0;
+	for (int i = 0; i < 200000; i++) {
+		if (disk->dirUnits[i].inodeNumber != -1) {
+			flag++;
+			//printf("%d  ", i);
+			printf("%s\n", disk->dirUnits[i].fileName);
+		}
+	}
+	if (flag == 0)
 		return -1;
-	}
-	for (int i = 0; i < disk->superblock.iNodeNum; i++) {
-		printf("%s\n", disk->dirUnits[i].fileName);
-	}
 	return 0;
 }
 
@@ -208,7 +227,7 @@ int listFile() {
 //打印存储文件的block
 int map(char fileName[]) {
 	int eachLine = 0;
-	for (int i = 0; i < disk->superblock.iNodeNum; i++) {
+	for (int i = 0; i < data_block_mount; i++) {
 		if (strcmp(fileName, disk->dirUnits[i].fileName) == 0) {
 			if (disk->inode_array[disk->dirUnits[i].inodeNumber].fileSize == 0)
 				return 1;//1表示文件为空
