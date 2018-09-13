@@ -193,19 +193,25 @@ void copyin(char spaceName[],const char*filename)//复制文件
 	nowaddr = addr + disk->dirUnits[filenumber].inodeNumber * block_size;
 	fseek(p, nowaddr, SEEK_SET);
 	filenumber = reserved_block_mount + filenumber;
-
+	int last = size%block_size;
 	char*ch = buffer;
 	//int now = addr_fat_start+65536+filenumber-reserved_block_mount;
 	for (int i = 0; i < count; i++)
 	{
-		fwrite(ch, 1, block_size, p);
-		//fseek(p, now, SEEK_SET);
-		//rite(&filenumber, 4, 1, p);
-		//w = disk->FAT[filenumber] - reserved_block_mount + 65536 + addr_fat_start;
-		nowaddr = disk->FAT[filenumber] * block_size;
-		fseek(p, nowaddr, SEEK_SET);
-		filenumber = disk->FAT[filenumber];
-		ch = ch + block_size;
+		if (i == count - 1)
+		{
+			fwrite(ch, 1, last, p);
+		}
+		else {
+			fwrite(ch, 1, block_size, p);
+			//fseek(p, now, SEEK_SET);
+			//rite(&filenumber, 4, 1, p);
+			//w = disk->FAT[filenumber] - reserved_block_mount + 65536 + addr_fat_start;
+			nowaddr = disk->FAT[filenumber] * block_size;
+			fseek(p, nowaddr, SEEK_SET);
+			filenumber = disk->FAT[filenumber];
+			ch = ch + block_size;
+		}
 	}
 	//disk->superblock.iNodeNum++;
 	fseek(p, addr_superblock_start, SEEK_SET);
@@ -245,20 +251,28 @@ void copyout(char spaceName[],const char*filename, char SName[])
 	nowinode += reserved_block_mount;
 	int blockcount = (size + block_size - 1) / block_size;
 	char *ch = buffer;
+	int last = size%block_size;
 	for (int i = 0; i < size; i++)
 		buffer[i] = 0;
 	for (int i = 0; i < blockcount; i++)
 	{
-		fread(ch, 1, block_size, p);
-		nowaddr = disk->FAT[nowinode] * block_size;
-		fseek(p, nowaddr, SEEK_SET);
-		nowinode = disk->FAT[nowinode];
-		ch = ch + block_size;
+		if (i == blockcount - 1)
+		{
+			fread(ch, 1, last, p);
+		}
+		else
+		{
+			fread(ch, 1, block_size, p);
+			nowaddr = disk->FAT[nowinode] * block_size;
+			fseek(p, nowaddr, SEEK_SET);
+			nowinode = disk->FAT[nowinode];
+			ch = ch + block_size;
+		}
 	}
 	fclose(p);
 
 	FILE *fpp = fopen(filename, "wb");
-	fwrite(buffer, 1, (blockcount*block_size), fpp);
+	fwrite(buffer, 1, size, fpp);
 	fclose(fpp);
 }
 
